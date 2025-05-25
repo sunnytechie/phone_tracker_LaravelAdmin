@@ -17,7 +17,7 @@ class ExpoController extends Controller
 {
 
     public function index() {
-        $users = User::all();
+
         $locations = PhoneLocation::all();
         $audios = PhoneAudio::all();
         $snapshots = PhoneSnapshot::all();
@@ -26,6 +26,8 @@ class ExpoController extends Controller
         }
         return Inertia::render('Dashboard', [
             'locations' => $locations,
+            'audios' => $audios,
+            'snapshots' => $snapshots,
         ]);
     }
 
@@ -61,7 +63,6 @@ class ExpoController extends Controller
     }
 
     public function storeaudio(Request $request) {
-        Log::info($request->all());
         if ($request->hasFile('audio')) {
             $file = $request->file('audio');
 
@@ -72,9 +73,6 @@ class ExpoController extends Controller
 
             // Store in storage/app/public/audio
             $path = $file->store('audio', 'public');
-
-            Log::info('audio: ' . $path);
-
             // Save to database
             PhoneAudio::create([
                 //'user_id' => $request->user_id,
@@ -89,7 +87,6 @@ class ExpoController extends Controller
     }
 
     public function storesnapshot(Request $request) {
-        Log::info($request->all());
         if ($request->hasFile('image')) {
             $imageData = $request->input('image');
 
@@ -98,8 +95,6 @@ class ExpoController extends Controller
 
             // Generate a unique filename
             $filename = 'snapshot_' . time() . '.jpg';
-
-            Log::info('picture: ' . $filename);
 
             // Save the file to storage/app/public/snapshots
             Storage::disk('public')->put("snapshots/{$filename}", $image);
@@ -117,7 +112,6 @@ class ExpoController extends Controller
     }
 
     public function storelocation(Request $request) {
-        Log::info($request->all());
 
         PhoneLocation::create([
             'latitude' => $request->latitude,

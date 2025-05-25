@@ -1,4 +1,13 @@
 <script setup>
+import { onMounted, nextTick } from 'vue'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+import { Head, Link, usePage, router } from '@inertiajs/vue3';
+
+const page = usePage();
+const props = defineProps({
+    snapshots: Object,
+});
 </script>
 
 <template>
@@ -13,7 +22,7 @@
         <thead class="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
                 <th scope="col" class="px-6 py-3">
-                    TimeStamp
+                    Collection TimeStamp
                 </th>
                 <th scope="col" class="px-6 py-3">
                     File
@@ -21,12 +30,12 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="bg-white border-b dark:border-gray-700 border-gray-200">
+            <tr v-for="(image, index) in page.props.snapshots" :key="index" class="bg-white border-b dark:border-gray-700 border-gray-200">
                 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                    2023-10-01 12:00:00
+                    {{ image.created_at }}
                 </th>
                 <td class="px-6 py-4">
-                    <img src="/screenshots/2023-10-01_12-00-00.png" alt="Screenshot" class="w-full h-auto" />
+                    <img :src="'/storage/' + image.file_path" alt="Camera Shot Blocked" class="w-full h-auto" />
                 </td>
             </tr>
         </tbody>

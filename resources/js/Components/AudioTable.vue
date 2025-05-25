@@ -1,4 +1,16 @@
 <script setup>
+import { onMounted, nextTick } from 'vue'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+import { Head, Link, usePage, router } from '@inertiajs/vue3';
+
+const page = usePage();
+defineProps({
+    audios: Object,
+});
+
+
+
 </script>
 
 <template>
@@ -13,7 +25,7 @@
         <thead class="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
                 <th scope="col" class="px-6 py-3">
-                    TimeStamp
+                    Collection TimeStamp
                 </th>
                 <th scope="col" class="px-6 py-3">
                     File
@@ -21,13 +33,13 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="bg-white border-b dark:border-gray-700 border-gray-200 w-full">
+            <tr v-for="(audio, index) in page.props.audios" :key="index" class="bg-white border-b dark:border-gray-700 border-gray-200 w-full">
                 <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap w-1/2">
-                    2023-10-01 12:00:00
+                    {{ audio.created_at }}
                 </th>
                 <td class="px-6 py-4 w-1/2">
                     <audio controls class="w-full">
-                        <source src="/audio/2023-10-01_12-00-00.mp3" type="audio/mpeg">
+                        <source :src="'/storage/' + audio.file_path" type="audio/mpeg">
                         Your browser does not support the audio element.
                     </audio>
                 </td>

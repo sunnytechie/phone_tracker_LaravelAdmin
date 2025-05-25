@@ -59,22 +59,22 @@ onMounted(async () => {
         </caption>
         <thead class="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
-                <th scope="col" class="px-6 py-3">
-                    TimeStamp
+                <th class="font-[600] text-[18px] px-6 py-3">
+                    Map Location  Coordinates
                 </th>
-                <th scope="col" class="px-6 py-3">
+                <th class="font-[600] text-[18px] px-6 py-3">
                     Map Location
                 </th>
             </tr>
         </thead>
         <tbody>
-            <tr v-for="location in page.props.locations" class="bg-white border-b dark:border-gray-700 border-gray-200">
-                <th scope="row" class="flex flex-col px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                    <span>{{ location.latitude }}</span>
-                    <span>{{ location.longitude }}</span>
-                    <span>{{ location.created_at }}</span>
-                </th>
-                <td class="px-6 py-4">
+            <tr v-for="(location, index) in page.props.locations" :key="index" class="bg-white border-b dark:border-gray-700 border-gray-200">
+                <td class="flex flex-col px-6 py-4 font-medium w-1/2 text-gray-900 whitespace-nowrap">
+                    <span><span class="font-[500] text-[24px]">Latitude: </span> {{ location.latitude }}</span>
+                    <span><span class="font-[500] text-[24px]">Longtitude: </span> {{ location.longitude }}</span>
+                    <span><span class="font-[500] text-[24px]">Collection Time: </span> {{ location.created_at }}</span>
+                </td>
+                <td class="px-6 py-4  w-1/2">
                     <div
                         :key="location.id"
                         class="map-container"

@@ -12,6 +12,8 @@ const page = usePage();
 
 defineProps({
     locations: Object,
+    audios: Object,
+    snapshots: Object,
 });
 
 
@@ -55,8 +57,8 @@ defineProps({
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                     <LocationTable :locations="page.props.locations" v-if="tracker === 'location'" />
-                    <AudioTable v-else-if="tracker === 'audio'" />
-                    <CameraTable v-else-if="tracker === 'camera'" />
+                    <AudioTable :audios="page.props.audios" v-else-if="tracker === 'audio'" />
+                    <CameraTable :snapshots="page.props.snapshots" v-else-if="tracker === 'camera'" />
                 </div>
             </div>
         </div>
