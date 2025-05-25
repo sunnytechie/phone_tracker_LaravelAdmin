@@ -30,7 +30,7 @@ class ExpoController extends Controller
     }
 
     public function register(Request $request) {
-        
+
         $request->validate([
             'fullname' => 'required|string|max:255',
             'email' => 'required|string',
@@ -82,39 +82,38 @@ class ExpoController extends Controller
                 'file_name' => $file->getClientOriginalName(),
             ]);
 
-            return true;
+            return 'true';
         }
 
-        return false;
+        return 'false';
     }
 
     public function storesnapshot(Request $request) {
         Log::info($request->all());
-        $request->validate([
-            'image' => 'string',
-        ]);
+        if ($request->hasFile('image')) {
+            $imageData = $request->input('image');
 
-        $imageData = $request->input('image');
+            // Decode the base64 string
+            $image = base64_decode($imageData);
 
-        // Decode the base64 string
-        $image = base64_decode($imageData);
+            // Generate a unique filename
+            $filename = 'snapshot_' . time() . '.jpg';
 
-        // Generate a unique filename
-        $filename = 'snapshot_' . time() . '.jpg';
+            Log::info('picture: ' . $filename);
 
-        Log::info('audio: ' . $filename);
+            // Save the file to storage/app/public/snapshots
+            Storage::disk('public')->put("snapshots/{$filename}", $image);
 
-        // Save the file to storage/app/public/snapshots
-        Storage::disk('public')->put("snapshots/{$filename}", $image);
+            // Save snapshot
+            PhoneSnapshot::create([
+                //'user_id' => $request->user_id,
+                'file_path' => "snapshots/{$filename}",
+                'file_name' => $filename,
+            ]);
 
-        // Save snapshot
-        PhoneSnapshot::create([
-            //'user_id' => $request->user_id,
-            'file_path' => "snapshots/{$filename}",
-            'file_name' => $filename,
-        ]);
-
-        return true;
+            return true;
+        }
+        return false;
     }
 
     public function storelocation(Request $request) {
@@ -129,7 +128,7 @@ class ExpoController extends Controller
             'heading' => $request->heading,
             'speed' => $request->speed,
         ]);
-        
+
         return true;
     }
 }
