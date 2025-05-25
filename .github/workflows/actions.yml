@@ -1,4 +1,4 @@
-name: CI/CD for BluTraq
+name: CI-CD for BluTraq
 
 on:
   push:
