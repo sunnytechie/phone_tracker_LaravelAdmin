@@ -1,10 +1,9 @@
-name: CI/CD for SFGHB
+name: CI/CD for BluTraq
 
 on:
   push:
     branches:
       - main
-      - staging
 jobs:
   deploy-production:
     runs-on: ubuntu-latest
@@ -40,7 +39,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
           source: "." # or the path to your Laravel app
-          target: "/home/sfilrmip/api_sfghb/" # customize the destination path on the server
+          target: "/home/sfilrmip/blutraq/" # customize the destination path on the server
           strip_components: 1 # adjust if needed
 
       - name: Run deployment commands on production Server
@@ -50,7 +49,7 @@ jobs:
           username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
           script: |
-            cd /home/sfilrmip/api_sfghb
+            cd /home/sfilrmip/blutraq
             php artisan migrate --force
             chmod -R 777 storage
             chown -R www-data:www-data storage
@@ -60,59 +59,3 @@ jobs:
             php artisan config:cache
             php artisan config:clear
             php artisan storage:link
-
-  deploy-testing:
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push' && github.ref == 'refs/heads/staging' || (github.event_name == 'pull_request' && github.event.action == 'closed' && contains(github.event.pull_request.base.ref, 'staging'))
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v2
-
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: "8.2.8"
-
-      - name: Install dependencies
-        run: composer install --no-dev --prefer-dist --optimize-autoloader
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '18.x'
-
-      - name: Install npm dependencies
-        run: npm install
-
-      - name: Build assets
-        run: npm run build
-
-      - name: Deploy to Test Server
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          source: "." # or the path to your Laravel app
-          target: "/home/sfilrmip/blutraq/" # customize the destination path on the server
-          strip_components: 1 # adjust if needed
-
-      - name: Run deployment commands on Testing Server
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.SERVER_HOST }}
-          username: ${{ secrets.SERVER_USERNAME }}
-          password: ${{ secrets.SERVER_PASSWORD }}
-          script: |
-            cd /home/sfilrmip/blutraq/
-            composer dump-autoload
-            php artisan migrate --force
-            chmod -R 777 storage
-            chown -R www-data:www-data storage
-            chmod -R 777 public/images
-            chown -R www-data:www-data public/images
-            php artisan optimize
-            php artisan config:cache
-            php artisan storage:link
-            supervisorctl restart all
