@@ -1,8 +1,55 @@
 <script setup>
+import { onMounted, nextTick } from 'vue'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
+import { Head, Link, usePage, router } from '@inertiajs/vue3';
+
+const page = usePage();
+defineProps({
+    locations: Object,
+});
+
+onMounted(async () => {
+  // Wait for the DOM to finish rendering all map containers
+  await nextTick()
+
+  page.props.locations.forEach(location => {
+    const map = L.map(`map-${location.id}`).setView([location.latitude, location.longitude], 13)
+
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map)
+
+    L.marker([location.latitude, location.longitude])
+      .addTo(map)
+      .bindPopup(`${location?.name}`)
+      .openPopup()
+
+    L.circle([location.latitude, location.longitude], {
+      radius: location.accuracy,
+      color: 'blue',
+      fillColor: '#add8e6',
+      fillOpacity: 0.4
+    }).addTo(map)
+  })
+})
+
+
 </script>
 
-<template>
+<style scoped>
+.map-container {
+  margin-bottom: 2rem;
+}
+.map {
+  height: 300px;
+  width: 100%;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+}
+</style>
 
+<template>
 
 <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
     <table class="w-full text-sm text-left rtl:text-right text-gray-500">
@@ -21,14 +68,19 @@
             </tr>
         </thead>
         <tbody>
-            <tr class="bg-white border-b dark:border-gray-700 border-gray-200">
-                <th scope="row" class="px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
-                    2023-10-01 12:00:00
+            <tr v-for="location in page.props.locations" class="bg-white border-b dark:border-gray-700 border-gray-200">
+                <th scope="row" class="flex flex-col px-6 py-4 font-medium text-gray-900 whitespace-nowrap">
+                    <span>{{ location.latitude }}</span>
+                    <span>{{ location.longitude }}</span>
+                    <span>{{ location.created_at }}</span>
                 </th>
                 <td class="px-6 py-4">
-                    <a href="/" target="_blank" rel="noopener noreferrer">
-                        Map Location
-                    </a>
+                    <div
+                        :key="location.id"
+                        class="map-container"
+                        >
+                        <div :id="'map-' + location?.id" class="map"></div>
+                    </div>
                 </td>
             </tr>
         </tbody>

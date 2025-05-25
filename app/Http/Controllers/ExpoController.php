@@ -15,14 +15,18 @@ use Illuminate\Support\Facades\Storage;
 
 class ExpoController extends Controller
 {
+
     public function index() {
         $users = User::all();
         $locations = PhoneLocation::all();
         $audios = PhoneAudio::all();
         $snapshots = PhoneSnapshot::all();
-
-        //return $snapshots;
-        return Inertia::render('Dashboard');
+        foreach ($locations as $tochukwu) {
+            $tochukwu->name = 'BluTraq';
+        }
+        return Inertia::render('Dashboard', [
+            'locations' => $locations,
+        ]);
     }
 
     public function register(Request $request) {

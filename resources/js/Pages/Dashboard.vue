@@ -1,12 +1,21 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { Head, Link, usePage, router } from '@inertiajs/vue3';
+import { reactive, onMounted, ref } from 'vue';
 import LocationTable from '@/Components/LocationsTable.vue';
 import AudioTable from '@/Components/AudioTable.vue';
 import CameraTable from '@/Components/CameraTable.vue';
 
 const tracker = ref('location');
+
+const page = usePage();
+
+defineProps({
+    locations: Object,
+});
+
+
+
 
 </script>
 
@@ -45,7 +54,7 @@ const tracker = ref('location');
         <div class=" mt-2 pb-12">
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                    <LocationTable v-if="tracker === 'location'" />
+                    <LocationTable :locations="page.props.locations" v-if="tracker === 'location'" />
                     <AudioTable v-else-if="tracker === 'audio'" />
                     <CameraTable v-else-if="tracker === 'camera'" />
                 </div>
